@@ -75,6 +75,7 @@ Built by Carolina Kogan Plachkinova (github.com/carolina-kp) as a portfolio-grad
 - Structured JSON logging. No print statements.
 - Secrets: .env locally, GitHub Actions secrets in CI, never committed.
 - Alembic migrations from the first table. Conventional commits.
+- Commit per logical unit within each sprint, not one monolithic commit per sprint. Each commit must build and pass tests on its own (e.g. migration → clients → job → endpoint → docs). One PR per sprint; the granularity lives inside it.
 - Prompt templates live as versioned files in `core/prompts/`, never inline strings.
 
 ## Zero-cost mode (active)
