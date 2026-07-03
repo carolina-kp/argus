@@ -14,6 +14,7 @@ logging.basicConfig(level=logging.INFO, format='{"level":"%(levelname)s","msg":"
 logger = logging.getLogger("argus.worker")
 
 DAYS = 30
+COINGECKO_PACE_SECONDS = 8
 
 
 async def backfill(days: int = DAYS) -> None:
@@ -26,6 +27,9 @@ async def backfill(days: int = DAYS) -> None:
                 for ts, price in await cg.market_chart(asset.coingecko_id, days):
                     await upsert_price(session, asset.coingecko_id, ts, price)
                 logger.info('{"backfill":"price","asset":"%s"}', asset.symbol)
+                # Pace CoinGecko: the free tier throttles bursts well below its
+                # nominal 30/min, so space historical calls out.
+                await asyncio.sleep(COINGECKO_PACE_SECONDS)
             if asset.defillama_slug:
                 for ts, tvl in await llama.protocol_tvl_history(asset.defillama_slug, days):
                     await upsert_tvl(session, asset.defillama_slug, ts, tvl)

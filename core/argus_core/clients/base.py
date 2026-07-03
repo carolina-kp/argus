@@ -25,8 +25,8 @@ class BaseClient:
 
     @retry(
         retry=retry_if_exception_type(_RETRYABLE),
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=1, min=1, max=20),
+        stop=stop_after_attempt(6),
+        wait=wait_exponential(multiplier=2, min=2, max=60),
         reraise=True,
     )
     async def _fetch(self, path: str, params: dict[str, Any] | None = None) -> Any:
