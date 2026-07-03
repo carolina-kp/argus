@@ -41,6 +41,27 @@ class TvlPoint(BaseModel):
     tvl_usd: float
 
 
+class ResearchAsk(BaseModel):
+    question: str
+    jurisdiction: str | None = None  # EU | CH | GLOBAL
+
+
+class Citation(BaseModel):
+    n: int
+    document: str
+    ref: str
+    url: str
+    score: float
+
+
+class ResearchAnswer(BaseModel):
+    answered: bool
+    answer: str | None = None
+    citations: list[Citation] = []
+    max_score: float | None = None
+    message: str | None = None
+
+
 class OnchainPoint(BaseModel):
     ts: datetime
     fastest_fee: int | None

@@ -7,6 +7,8 @@ dependencies = [
     "apscheduler>=3.10",
     "pydantic-settings>=2.3",
     "argus-core",
+    "beautifulsoup4>=4.12",
+    "pypdf>=4.2",
 ]
 
 [project.optional-dependencies]
@@ -29,7 +31,7 @@ strict = true
 disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
-module = "apscheduler.*"
+module = ["apscheduler.*", "bs4.*", "fastembed.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

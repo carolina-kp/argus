@@ -1,10 +1,16 @@
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import (
+    JSON,
+    Boolean,
     DateTime,
+    Float,
     ForeignKey,
+    Integer,
     Numeric,
     String,
+    Text,
     UniqueConstraint,
     func,
 )
@@ -79,3 +85,22 @@ class UnlockEvent(Base):
     amount_tokens: Mapped[float | None] = mapped_column(Numeric(28, 4))
     amount_usd: Mapped[float | None] = mapped_column(Numeric(28, 2))
     description: Mapped[str | None] = mapped_column(String(256))
+
+
+class RagQuery(Base):
+    """Audit log for the regulatory RAG: every question, retrieved set, and answer."""
+
+    __tablename__ = "rag_queries"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    question: Mapped[str] = mapped_column(Text)
+    rewritten_query: Mapped[str | None] = mapped_column(Text)
+    jurisdiction: Mapped[str | None] = mapped_column(String(8))
+    retrieved: Mapped[list[dict[str, Any]]] = mapped_column(JSON)
+    answer: Mapped[str | None] = mapped_column(Text)
+    max_score: Mapped[float | None] = mapped_column(Float)
+    refused: Mapped[bool] = mapped_column(Boolean, default=False)
+    latency_ms: Mapped[int | None] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
