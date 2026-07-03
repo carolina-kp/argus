@@ -20,3 +20,9 @@ def tvl_snapshot() -> None:
 
 def onchain_snapshot() -> None:
     asyncio.run(collect_onchain())
+
+
+def ingest_regulatory() -> None:
+    from app.ingest import run_ingestion  # local import: heavy (embedding model)
+
+    asyncio.run(run_ingestion())

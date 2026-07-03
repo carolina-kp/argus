@@ -18,5 +18,21 @@ class Settings(BaseSettings):
     defillama_stablecoins_url: str = "https://stablecoins.llama.fi"
     mempool_base_url: str = "https://mempool.space/api"
 
+    # LLM (zero-cost mode: Gemini free tier primary, Groq free tier fallback).
+    llm_provider: str = "gemini"  # gemini | groq | anthropic
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash"
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    anthropic_api_key: str = ""
+    anthropic_model: str = "claude-sonnet-5"
+
+    # Regulatory RAG.
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    embedding_dim: int = 384
+    qdrant_regulatory_collection: str = "regulatory"
+    rag_top_k: int = 12
+    rag_score_cutoff: float = 0.62
+
 
 settings = Settings()
