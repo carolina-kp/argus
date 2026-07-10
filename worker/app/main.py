@@ -4,6 +4,7 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.jobs import (
+    daily_brief,
     heartbeat,
     ingest_regulatory,
     market_snapshot,
@@ -21,6 +22,10 @@ def main() -> None:
     scheduler.add_job(market_snapshot, "interval", minutes=15, id="market_snapshot")
     scheduler.add_job(tvl_snapshot, "interval", hours=1, id="tvl_snapshot")
     scheduler.add_job(onchain_snapshot, "interval", hours=1, id="onchain_snapshot")
+    # Daily brief at 07:00 Europe/Zurich (CET/CEST).
+    scheduler.add_job(
+        daily_brief, "cron", hour=7, minute=0, timezone="Europe/Zurich", id="daily_brief"
+    )
     # Weekly regulatory refresh (Mondays 05:00 UTC); manual: `python -m app.ingest`.
     scheduler.add_job(ingest_regulatory, "cron", day_of_week="mon", hour=5, id="ingest_regulatory")
     scheduler.start()

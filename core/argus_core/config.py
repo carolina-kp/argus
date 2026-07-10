@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-5"
 
+    # Daily brief email (zero-cost: Gmail SMTP app password; Resend is a drop-in swap).
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    brief_from: str = ""
+    brief_recipient: str = ""
+
     # Regulatory RAG.
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dim: int = 384

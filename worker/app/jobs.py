@@ -22,6 +22,12 @@ def onchain_snapshot() -> None:
     asyncio.run(collect_onchain())
 
 
+def daily_brief() -> None:
+    from app.brief import run_daily_brief  # local import: heavy (embedding model)
+
+    asyncio.run(run_daily_brief())
+
+
 def ingest_regulatory() -> None:
     from app.ingest import run_ingestion  # local import: heavy (embedding model)
 
