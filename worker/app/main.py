@@ -4,6 +4,7 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.jobs import (
+    anomaly_scan,
     daily_brief,
     heartbeat,
     ingest_regulatory,
@@ -22,6 +23,7 @@ def main() -> None:
     scheduler.add_job(market_snapshot, "interval", minutes=15, id="market_snapshot")
     scheduler.add_job(tvl_snapshot, "interval", hours=1, id="tvl_snapshot")
     scheduler.add_job(onchain_snapshot, "interval", hours=1, id="onchain_snapshot")
+    scheduler.add_job(anomaly_scan, "interval", minutes=30, id="anomaly_scan")
     # Daily brief at 07:00 Europe/Zurich (CET/CEST).
     scheduler.add_job(
         daily_brief, "cron", hour=7, minute=0, timezone="Europe/Zurich", id="daily_brief"

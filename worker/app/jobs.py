@@ -28,6 +28,12 @@ def daily_brief() -> None:
     asyncio.run(run_daily_brief())
 
 
+def anomaly_scan() -> None:
+    from app.anomaly import run_anomaly_scan
+
+    asyncio.run(run_anomaly_scan())
+
+
 def ingest_regulatory() -> None:
     from app.ingest import run_ingestion  # local import: heavy (embedding model)
 

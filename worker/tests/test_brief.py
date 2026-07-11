@@ -7,7 +7,6 @@ from argus_core.models import (
     Base,
     Brief,
     PriceSnapshot,
-    TvlSnapshot,
     UnlockEvent,
     Watchlist,
 )
@@ -66,8 +65,12 @@ async def test_unlocks_within_window(session: AsyncSession) -> None:
     await session.flush()
     session.add_all(
         [
-            UnlockEvent(watchlist_id=wl.id, unlock_date=now + timedelta(days=3), amount_usd=1_000_000),
-            UnlockEvent(watchlist_id=wl.id, unlock_date=now + timedelta(days=30), amount_usd=2_000_000),
+            UnlockEvent(
+                watchlist_id=wl.id, unlock_date=now + timedelta(days=3), amount_usd=1_000_000
+            ),
+            UnlockEvent(
+                watchlist_id=wl.id, unlock_date=now + timedelta(days=30), amount_usd=2_000_000
+            ),
         ]
     )
     await session.commit()
