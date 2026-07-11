@@ -29,6 +29,11 @@ class Chunk:
         h = hashlib.sha256(raw.encode()).hexdigest()
         return f"{h[:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
 
+    @property
+    def content_hash(self) -> str:
+        """Hash of the chunk text; used to skip re-embedding unchanged chunks."""
+        return hashlib.sha256(self.text.encode()).hexdigest()
+
     def payload(self) -> dict[str, Any]:
         return {
             "source": self.source,
@@ -39,6 +44,7 @@ class Chunk:
             "text": self.text,
             "part": self.part,
             "retrieval_date": self.retrieval_date,
+            "content_hash": self.content_hash,
         }
 
 
