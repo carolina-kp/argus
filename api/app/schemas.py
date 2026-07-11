@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -60,6 +61,39 @@ class ResearchAnswer(BaseModel):
     citations: list[Citation] = []
     max_score: float | None = None
     message: str | None = None
+
+
+class BriefSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    brief_date: datetime
+    emailed_at: datetime | None
+    created_at: datetime
+
+
+class BriefDetail(BriefSummary):
+    sections: dict[str, Any]
+    body_markdown: str
+
+
+class AnomalyItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    kind: str
+    symbol: str
+    metric: str
+    zscore: float | None
+    value: float | None
+    ts: datetime
+    detail: dict[str, Any]
+    created_at: datetime
+
+
+class IngestTriggerResponse(BaseModel):
+    status: str
+    requested_at: datetime
 
 
 class OnchainPoint(BaseModel):

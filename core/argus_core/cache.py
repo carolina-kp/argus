@@ -22,3 +22,18 @@ async def cache_get(key: str) -> Any | None:
 
 async def cache_set(key: str, value: Any, ttl_seconds: int) -> None:
     await get_redis().set(key, json.dumps(value), ex=ttl_seconds)
+
+
+# Manual regulatory-ingestion trigger. The API sets this key; the worker
+# polls and clears it (see api /admin/ingest and worker check_ingest_request).
+INGEST_REQUEST_KEY = "argus:ingest:requested"
+
+
+async def request_ingest(requested_at: str) -> None:
+    await get_redis().set(INGEST_REQUEST_KEY, requested_at)
+
+
+async def pop_ingest_request() -> str | None:
+    """Atomically read and clear the trigger; returns the timestamp if set."""
+    value = await get_redis().getdel(INGEST_REQUEST_KEY)
+    return value if value is None else str(value)

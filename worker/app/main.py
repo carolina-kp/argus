@@ -5,6 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.jobs import (
     anomaly_scan,
+    check_ingest_request,
     daily_brief,
     heartbeat,
     ingest_regulatory,
@@ -30,6 +31,8 @@ def main() -> None:
     )
     # Weekly regulatory refresh (Mondays 05:00 UTC); manual: `python -m app.ingest`.
     scheduler.add_job(ingest_regulatory, "cron", day_of_week="mon", hour=5, id="ingest_regulatory")
+    # Poll the manual re-ingestion trigger set via the API's /admin/ingest.
+    scheduler.add_job(check_ingest_request, "interval", minutes=1, id="check_ingest_request")
     scheduler.start()
     logger.info('{"event":"worker_started"}')
 
