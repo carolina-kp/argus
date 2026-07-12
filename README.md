@@ -85,6 +85,9 @@ The worker runs scheduled agents on top of the data layer:
   text changed (content-hash diff), so unchanged documents are skipped.
 
 ```bash
+# Generate today's brief on demand (same path as the 07:00 cron; stores + emails-or-skips):
+docker compose exec worker python -m app.run_brief
+
 curl -H "Authorization: Bearer $TOKEN" "http://localhost:8000/briefs"
 curl -H "Authorization: Bearer $TOKEN" "http://localhost:8000/briefs/2026-07-11"
 curl -H "Authorization: Bearer $TOKEN" "http://localhost:8000/anomalies?kind=depeg&days=7"
