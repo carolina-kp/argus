@@ -21,3 +21,13 @@ async def test_onchain_latest_404_when_empty(client: AsyncClient) -> None:
 async def test_days_query_validation(client: AsyncClient) -> None:
     resp = await client.get("/market/tvl/aave?days=999", headers=auth_headers())
     assert resp.status_code == 422
+
+
+async def test_unlocks_requires_auth(client: AsyncClient) -> None:
+    assert (await client.get("/market/unlocks")).status_code == 401
+
+
+async def test_unlocks_empty(client: AsyncClient) -> None:
+    resp = await client.get("/market/unlocks", headers=auth_headers())
+    assert resp.status_code == 200
+    assert resp.json() == []
