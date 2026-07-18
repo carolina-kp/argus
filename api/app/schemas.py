@@ -103,3 +103,12 @@ class OnchainPoint(BaseModel):
     hour_fee: int | None
     hashrate_ehs: float | None
     difficulty: float | None
+
+
+class UnlockPoint(BaseModel):
+    symbol: str
+    name: str
+    unlock_date: datetime
+    amount_tokens: float | None = None
+    amount_usd: float | None = None
+    description: str | None = None
