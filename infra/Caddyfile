@@ -1,0 +1,37 @@
+# Argus edge — parameterized reverse proxy with automatic TLS.
+#
+# Nothing here is host-specific. Set via environment (see infra/.env.prod.example):
+#   ARGUS_DOMAIN          e.g. argus.duckdns.org (Caddy provisions Let's Encrypt TLS)
+#   ARGUS_FRONTEND_TARGET upstream for the frontend; defaults to the compose
+#                         service (frontend:3000). Vercel remains the primary
+#                         frontend host; this is the self-hosted fallback path.
+#   ARGUS_ACME_EMAIL      contact email for Let's Encrypt.
+
+{
+	email {$ARGUS_ACME_EMAIL}
+}
+
+{$ARGUS_DOMAIN} {
+	encode gzip
+
+	# API under /api/*, stripped before proxying.
+	handle_path /api/* {
+		reverse_proxy api:8000
+	}
+
+	# Health endpoint exposed at the root for the deploy gate and Uptime Kuma.
+	handle /health {
+		rewrite * /health
+		reverse_proxy api:8000
+	}
+
+	handle {
+		reverse_proxy {$ARGUS_FRONTEND_TARGET:frontend:3000}
+	}
+}
+
+# Uptime Kuma on a subdomain of the same apex.
+status.{$ARGUS_DOMAIN} {
+	encode gzip
+	reverse_proxy uptime-kuma:3001
+}

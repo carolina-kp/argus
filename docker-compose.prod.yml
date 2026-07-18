@@ -1,0 +1,78 @@
+# Production overlay — run as:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Host-agnostic: works on any Linux host with Docker (Oracle ARM, EC2, Hetzner,
+# a laptop). Images come from GHCR (multi-arch, built by release.yml); nothing
+# is built on the host. Deploy-time variables: infra/.env.prod.example.
+
+services:
+  api:
+    build: !reset null
+    image: ghcr.io/${GHCR_OWNER:-carolina-kp}/argus-api:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    # No host port in production; Caddy is the only ingress.
+    ports: !reset []
+
+  worker:
+    build: !reset null
+    image: ghcr.io/${GHCR_OWNER:-carolina-kp}/argus-worker:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/${GHCR_OWNER:-carolina-kp}/argus-frontend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      ARGUS_API_URL: http://api:8000
+      ARGUS_API_TOKEN: ${API_TOKEN}
+    depends_on:
+      api:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      ARGUS_DOMAIN: ${ARGUS_DOMAIN}
+      ARGUS_ACME_EMAIL: ${ARGUS_ACME_EMAIL}
+      ARGUS_FRONTEND_TARGET: ${ARGUS_FRONTEND_TARGET:-}
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - frontend
+    healthcheck:
+      # Admin endpoint; port 80 answers with a redirect, which wget won't treat as up.
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    volumes:
+      - uptime_kuma_data:/app/data
+    healthcheck:
+      test: ["CMD", "extra/healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped
+
+  qdrant:
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+  uptime_kuma_data:
