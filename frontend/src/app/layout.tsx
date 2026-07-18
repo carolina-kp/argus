@@ -52,7 +52,7 @@ export default function RootLayout({
         */}
         <span
           aria-hidden
-          className="pointer-events-none fixed inset-y-0 left-0 z-20 w-[3px] bg-gradient-to-b from-glacier via-glacier/30 to-seal"
+          className="rail-draw pointer-events-none fixed inset-y-0 left-0 z-20 w-[3px] bg-gradient-to-b from-glacier via-glacier/40 to-seal"
         />
 
         <header className="sticky top-0 z-10 border-b border-line bg-ink/85 backdrop-blur">

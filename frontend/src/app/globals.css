@@ -111,6 +111,36 @@ body::before {
   }
 }
 
+/*
+  Orchestrated page-load moment. The jurisdiction rail draws down from the top,
+  then hero content rises in a short stagger. Transform/opacity only; expo ease.
+*/
+@keyframes rail-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rail-draw {
+  transform-origin: top center;
+  animation: rail-draw 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.rise {
+  animation: rise 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
