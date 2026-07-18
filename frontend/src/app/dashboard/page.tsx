@@ -167,22 +167,22 @@ export default async function DashboardPage() {
         </div>
       ) : null}
 
+      {/* The ledger dominates; everything else is a secondary band below it. */}
       <Panel title="Watchlist" meta="30-day price">
         <WatchlistTable rows={data.watchRows} />
       </Panel>
 
       <div className="grid gap-8 lg:grid-cols-3">
-        <Panel title="DeFi TVL" meta="30-day" className="lg:col-span-2">
+        <Panel title="DeFi TVL" meta="30-day">
           <TvlPanel rows={data.tvlRows} />
         </Panel>
         <Panel title="Unlocks" meta="next 7 days">
           <UnlockCalendar unlocks={data.unlocks} />
         </Panel>
+        <Panel title="BTC on-chain" meta="latest snapshot">
+          <BtcTiles data={data.btc} />
+        </Panel>
       </div>
-
-      <Panel title="BTC on-chain" meta="latest snapshot">
-        <BtcTiles data={data.btc} />
-      </Panel>
     </div>
   );
 }
