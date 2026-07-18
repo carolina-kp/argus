@@ -143,7 +143,7 @@ export default function ResearchPage() {
         </h1>
         <p className="mt-3 font-mono text-sm leading-relaxed text-parchment-dim">
           Answers cite the exact article or section and link to the source. It
-          explains what the regulation says — it never advises on what to do.
+          explains what the regulation says; it never advises on what to do.
         </p>
       </header>
 
@@ -242,9 +242,14 @@ export default function ResearchPage() {
 
       {(status === "loading" || status === "done") && asked ? (
         <div className="space-y-5">
-          <p className="border-l-2 border-glacier-dim pl-3 font-mono text-xs leading-relaxed text-parchment-dim">
-            {asked}
-          </p>
+          <div className="space-y-1.5">
+            <p className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-parchment-faint">
+              Asked
+            </p>
+            <p className="font-serif text-lg italic leading-relaxed text-parchment-dim">
+              {asked}
+            </p>
+          </div>
           {status === "loading" ? (
             <p className="font-mono text-sm text-parchment-faint">
               Retrieving and generating a cited answer…

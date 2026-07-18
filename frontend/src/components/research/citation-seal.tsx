@@ -21,7 +21,7 @@ export function CitationSeal({ citation }: { citation: Citation }) {
       href={citation.url}
       target="_blank"
       rel="noopener noreferrer"
-      title={`${citation.document} — ${citation.ref} · ${label} · score ${citation.score.toFixed(2)}`}
+      title={`${citation.document} · ${citation.ref} · ${label} · score ${citation.score.toFixed(2)}`}
       className="group inline-flex items-stretch overflow-hidden rounded border border-line bg-ink transition-colors duration-200 hover:border-seal-dim"
     >
       <span className="flex items-center bg-slate px-1.5 font-mono text-[0.65rem] text-parchment-faint">
