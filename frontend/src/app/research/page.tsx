@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Jurisdiction, ResearchAnswer } from "@/lib/types";
+import type { Citation, Jurisdiction, ResearchAnswer } from "@/lib/types";
 import { CitationSeal } from "@/components/research/citation-seal";
 
 type Status = "idle" | "loading" | "done" | "error";
@@ -16,6 +16,25 @@ const EXAMPLES = [
   "What are the whitepaper requirements for crypto-asset offerings under MiCA?",
   "What does MiCA require of stablecoin (ART/EMT) issuers?",
   "How does FINMA classify a hybrid payment and utility token?",
+];
+
+// Illustrates the citation-seal format on first load. Real source URLs; these
+// are not a retrieved answer, only the shape a real answer's sources take.
+const SAMPLE_CITATIONS: Citation[] = [
+  {
+    n: 1,
+    document: "mica",
+    ref: "Art. 6",
+    url: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1114",
+    score: 0.82,
+  },
+  {
+    n: 2,
+    document: "finma",
+    ref: "ICO Guidelines",
+    url: "https://www.finma.ch/en/documentation/finma-guidance/",
+    score: 0.78,
+  },
 ];
 
 /**
@@ -211,23 +230,36 @@ export default function ResearchPage() {
       </form>
 
       {status === "idle" ? (
-        <div className="space-y-2">
-          <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-parchment-faint">
-            Try
-          </p>
-          {EXAMPLES.map((ex) => (
-            <button
-              key={ex}
-              type="button"
-              onClick={() => {
-                setQuestion(ex);
-                textareaRef.current?.focus();
-              }}
-              className="block w-full rounded border border-line bg-slate px-4 py-2.5 text-left font-mono text-xs leading-relaxed text-parchment-dim transition-colors duration-200 hover:border-glacier-dim hover:text-parchment"
-            >
-              {ex}
-            </button>
-          ))}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-parchment-faint">
+              Try
+            </p>
+            {EXAMPLES.map((ex) => (
+              <button
+                key={ex}
+                type="button"
+                onClick={() => {
+                  setQuestion(ex);
+                  textareaRef.current?.focus();
+                }}
+                className="block w-full rounded border border-line bg-slate px-4 py-2.5 text-left font-mono text-xs leading-relaxed text-parchment-dim transition-colors duration-200 hover:border-glacier-dim hover:text-parchment"
+              >
+                {ex}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-2 border-t border-line pt-5">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-parchment-faint">
+              Sources appear as seals (example format)
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {SAMPLE_CITATIONS.map((c) => (
+                <CitationSeal key={c.n} citation={c} />
+              ))}
+            </div>
+          </div>
         </div>
       ) : null}
 
