@@ -41,7 +41,7 @@ Built by Carolina Kogan Plachkinova (github.com/carolina-kp) as a portfolio-grad
 ```
 
 ### Components
-- **frontend/**: Next.js 14 + TypeScript + Tailwind on Vercel. Pages: Dashboard (watchlist, TVL panels, BTC on-chain tiles, unlock calendar), Regulatory Research Chat (RAG with article-level citation chips), Briefs archive, Anomalies feed. Dark terminal aesthetic.
+- **frontend/**: Next.js 16 (App Router, React 19) + TypeScript (strict) + Tailwind v4 on Vercel. Pages: Dashboard (watchlist, TVL panels, BTC on-chain tiles, unlock calendar), Regulatory Research Chat (RAG with article-level citation chips), Briefs archive, Anomalies feed. Dark terminal aesthetic.
 - **api/**: FastAPI. REST endpoints, Pydantic models everywhere, async httpx clients with retry/backoff. Auth: single-user token for v1 (env var), designed so proper auth can slot in later.
 - **worker/**: APScheduler jobs:
   - `daily_brief` (07:00 CET): watchlist moves, top TVL changes from DeFiLlama, unlocks in next 7 days, plus one retrieval pass over the regulatory collection for any watchlist-relevant development. Generate via Anthropic API, store, email.

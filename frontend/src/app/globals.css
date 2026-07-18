@@ -1,34 +1,50 @@
 @import "tailwindcss";
 
+/*
+  Argus design tokens — "Regulatory Terminal: a Swiss ledger in the dark".
+  Palette is fixed hex (approved Sprint 4 design plan), not derived, so the
+  gazette/ledger character stays exact across pages.
+*/
 :root {
-  --bg: oklch(0.16 0.012 240);
-  --bg-raised: oklch(0.20 0.014 240);
-  --border: oklch(0.30 0.014 240);
-  --text: oklch(0.92 0.01 240);
-  --text-muted: oklch(0.64 0.014 240);
-  --accent: oklch(0.78 0.16 155);
-  --accent-dim: oklch(0.55 0.10 155);
-  --warn: oklch(0.75 0.15 70);
+  --ink: #0c1116; /* base, blue-black */
+  --slate: #151c24; /* raised panels / table surfaces */
+  --slate-2: #1b232d; /* hover / nested surface */
+  --line: #232c36; /* hairline borders */
+  --line-strong: #2f3a46; /* emphasised rules */
+  --parchment: #e8e4d8; /* primary text, warm off-white */
+  --parchment-dim: #8b93a0; /* muted / secondary text */
+  --parchment-faint: #5b6470; /* labels, disabled */
+  --seal: #e8b04b; /* regulatory accent / CH provenance */
+  --seal-dim: #7a5f2a; /* seal, de-emphasised */
+  --glacier: #5aa9c9; /* data accent / EU provenance / links */
+  --glacier-dim: #2f5c6e; /* glacier, de-emphasised */
+  --up: #4fb477; /* market: positive */
+  --down: #e5484d; /* market: negative */
 
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Spectral", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas,
+    monospace;
 }
 
+/* Tailwind v4 token bridge — generates the bg, text and border utilities. */
 @theme inline {
-  --color-bg: var(--bg);
-  --color-bg-raised: var(--bg-raised);
-  --color-border: var(--border);
-  --color-text: var(--text);
-  --color-text-muted: var(--text-muted);
-  --color-accent: var(--accent);
-  --color-accent-dim: var(--accent-dim);
-  --color-warn: var(--warn);
-  --font-mono: var(--font-mono);
-  --font-sans: var(--font-sans);
-}
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-slate-2: var(--slate-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-parchment: var(--parchment);
+  --color-parchment-dim: var(--parchment-dim);
+  --color-parchment-faint: var(--parchment-faint);
+  --color-seal: var(--seal);
+  --color-seal-dim: var(--seal-dim);
+  --color-glacier: var(--glacier);
+  --color-glacier-dim: var(--glacier-dim);
+  --color-up: var(--up);
+  --color-down: var(--down);
 
-* {
-  border-color: var(--border);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
 }
 
 html {
@@ -36,30 +52,71 @@ html {
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
+  background-color: var(--ink);
+  color: var(--parchment);
+  font-family: var(--font-mono);
+  /* Faint ledger grid: the register the whole terminal is ruled on. */
   background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 48px 48px;
-  background-attachment: fixed;
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px;
   background-position: -1px -1px;
+  background-attachment: fixed;
+}
+
+/* The grid should read as texture, not a table — fade it under content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    color-mix(in srgb, var(--ink) 55%, transparent) 0%,
+    var(--ink) 72%
+  );
+  pointer-events: none;
 }
 
 ::selection {
-  background: var(--accent-dim);
-  color: var(--bg);
+  background: var(--seal);
+  color: var(--ink);
 }
 
-.scan-caret::after {
-  content: "_";
-  color: var(--accent);
-  animation: blink 1.1s steps(1) infinite;
+/* Visible keyboard focus everywhere — a hard requirement this sprint. */
+:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+*:focus:not(:focus-visible) {
+  outline: none;
 }
 
-@keyframes blink {
+/* Signature detail: numerals line up in the ledger. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Typewriter caret used by the (client-side, non-streaming) chat reveal. */
+.caret::after {
+  content: "▍";
+  color: var(--seal);
+  margin-left: 1px;
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+@keyframes caret-blink {
   50% {
     opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
