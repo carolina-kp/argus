@@ -4,6 +4,9 @@ import time
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.jobs import (
+    anomaly_scan,
+    check_ingest_request,
+    daily_brief,
     heartbeat,
     ingest_regulatory,
     market_snapshot,
@@ -21,8 +24,15 @@ def main() -> None:
     scheduler.add_job(market_snapshot, "interval", minutes=15, id="market_snapshot")
     scheduler.add_job(tvl_snapshot, "interval", hours=1, id="tvl_snapshot")
     scheduler.add_job(onchain_snapshot, "interval", hours=1, id="onchain_snapshot")
+    scheduler.add_job(anomaly_scan, "interval", minutes=30, id="anomaly_scan")
+    # Daily brief at 07:00 Europe/Zurich (CET/CEST).
+    scheduler.add_job(
+        daily_brief, "cron", hour=7, minute=0, timezone="Europe/Zurich", id="daily_brief"
+    )
     # Weekly regulatory refresh (Mondays 05:00 UTC); manual: `python -m app.ingest`.
     scheduler.add_job(ingest_regulatory, "cron", day_of_week="mon", hour=5, id="ingest_regulatory")
+    # Poll the manual re-ingestion trigger set via the API's /admin/ingest.
+    scheduler.add_job(check_ingest_request, "interval", minutes=1, id="check_ingest_request")
     scheduler.start()
     logger.info('{"event":"worker_started"}')
 

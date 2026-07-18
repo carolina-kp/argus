@@ -45,6 +45,34 @@ async def upsert_points(
     )
 
 
+async def existing_content_hashes() -> dict[str, str]:
+    """Map of point_id -> content_hash for every point currently in the collection.
+
+    Used by ingestion to re-embed only chunks whose text changed.
+    """
+    client = get_client()
+    name = settings.qdrant_regulatory_collection
+    if not await client.collection_exists(name):
+        return {}
+    hashes: dict[str, str] = {}
+    offset: Any = None
+    while True:
+        points, offset = await client.scroll(
+            collection_name=name,
+            limit=256,
+            offset=offset,
+            with_payload=["content_hash"],
+            with_vectors=False,
+        )
+        for p in points:
+            payload = p.payload or {}
+            if "content_hash" in payload:
+                hashes[str(p.id)] = payload["content_hash"]
+        if offset is None:
+            break
+    return hashes
+
+
 async def search_regulatory(
     vector: list[float], top_k: int, jurisdiction: str | None = None
 ) -> list[tuple[float, dict[str, Any]]]:

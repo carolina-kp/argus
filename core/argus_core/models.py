@@ -87,6 +87,45 @@ class UnlockEvent(Base):
     description: Mapped[str | None] = mapped_column(String(256))
 
 
+class Brief(Base):
+    """A generated daily brief. One per calendar date (CET)."""
+
+    __tablename__ = "briefs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    brief_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), unique=True, index=True
+    )
+    sections: Mapped[dict[str, Any]] = mapped_column(JSON)
+    body_markdown: Mapped[str] = mapped_column(Text)
+    emailed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class Anomaly(Base):
+    """A flagged anomaly. `dedupe_key` prevents the same event refiring."""
+
+    __tablename__ = "anomalies"
+    __table_args__ = (
+        UniqueConstraint("dedupe_key", name="uq_anomaly_dedupe"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(16), index=True)  # zscore | depeg
+    symbol: Mapped[str] = mapped_column(String(32), index=True)
+    metric: Mapped[str] = mapped_column(String(16))  # return | volume | tvl | price
+    zscore: Mapped[float | None] = mapped_column(Float)
+    value: Mapped[float | None] = mapped_column(Float)
+    ts: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    detail: Mapped[dict[str, Any]] = mapped_column(JSON)
+    dedupe_key: Mapped[str] = mapped_column(String(128))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
 class RagQuery(Base):
     """Audit log for the regulatory RAG: every question, retrieved set, and answer."""
 
