@@ -13,11 +13,11 @@ against EUR-Lex, and every design decision documented in `DECISIONS.md`.
 ## Repo layout
 
 ```
-frontend/   Next.js 14+ (TypeScript, Tailwind, App Router)
+frontend/   Next.js 16 (TypeScript, Tailwind v4, App Router)
 api/        FastAPI service (watchlist CRUD, market/on-chain/RAG, briefs, anomalies)
 worker/     APScheduler job runner (snapshots, daily brief, anomaly scan, ingestion)
 core/       Shared package: config, db, models, data clients, Alembic migrations
-infra/      IaC (CloudFormation) — added in Sprint 5
+infra/      Caddy edge config, deploy/backup scripts, CloudFormation template
 ```
 
 ## Local development
@@ -120,3 +120,27 @@ cd frontend && npm run lint
 
 Pre-commit hooks (ruff, ruff-format, basic hygiene) run automatically on `git commit`
 once installed: `pip install pre-commit && pre-commit install`.
+
+## Deployment
+
+The system is cloud-portable by design and runs at 0 EUR/month as a deliberate
+cost decision: CI builds multi-arch (amd64 + arm64) images to GHCR, and the
+deploy path targets **any Ubuntu host with Docker** — the host is configured
+entirely through GitHub secrets and env vars, never named in the repo.
+
+- `release.yml` — buildx builds `argus-api`, `argus-worker`, `argus-frontend`
+  for linux/amd64 + linux/arm64, pushes to GHCR on merge to master.
+- `deploy.yml` (or `infra/deploy.sh` by hand) — SSHes to the host from secrets,
+  syncs compose files, `docker compose pull && up -d`, then **fails unless
+  `/health` returns 200**.
+- `docker-compose.prod.yml` — production overlay: GHCR images, Caddy TLS
+  (domain via `ARGUS_DOMAIN`), Uptime Kuma monitoring, restart policies.
+- `infra/host-setup.sh` — one-time idempotent bootstrap for a fresh Ubuntu VM.
+- `infra/backup/` — nightly `pg_dump` + Qdrant snapshots, pushed to a private
+  GitHub release (default) or any S3-compatible store; restore script included.
+- `infra/cloudformation.yaml` — tested AWS deploy path (VPC, security group,
+  EC2 with Docker UserData), kept as a documented portfolio artifact; the
+  always-on host is a free-tier provider instead.
+
+The frontend's primary host is Vercel; the compose frontend container is the
+self-hosted fallback behind Caddy.

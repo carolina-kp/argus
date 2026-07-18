@@ -49,3 +49,26 @@
 - **Sparklines hand-rolled as SVG** (no charting dependency), colour follows trend. Same minimal-deps posture drove a small dependency-free markdown renderer for brief bodies and plain controlled form state (no react-hook-form/zod) for the single-field research box.
 - **Anomaly filters via URL search params** (server-rendered, shareable) rather than client fetching. Every page carries the disclaimer footer; visible `:focus-visible` rings and reduced-motion handling are global in `globals.css`.
 - Every page degrades honestly when the API is down (unreachable banner / empty states) — the watchlist fetch doubles as the reachability probe on the dashboard. Verified all routes return 200 with the backend offline; proxy returns 502 (backend down) and 400 (empty question).
+
+## 2026-07-18 — Sprint 5 deployment + IaC (host-agnostic phase)
+Oracle signup was blocked pending a support inquiry, so this sprint delivered everything that does **not** need a live VM IP; nothing in the repo names a host.
+
+- **Host-agnostic by construction**: `deploy.yml`/`infra/deploy.sh` take host, user, key and domain from secrets/env; `docker-compose.prod.yml` swaps `build:` for GHCR `image:` refs (`GHCR_OWNER`/`IMAGE_TAG` vars); the Caddyfile reads `ARGUS_DOMAIN`/`ARGUS_ACME_EMAIL` from the environment. Switching Oracle → Hetzner → EC2 is a secrets change, not a code change — this is also the Oracle-capacity fallback insurance.
+- **Multi-arch images** (linux/amd64 + linux/arm64) via buildx matrix in `release.yml`, GHA layer caching per image, tags `latest` + short SHA. arm64 exists solely for the Oracle Always Free ARM VM.
+- **Health gate is the deploy contract**: the workflow polls `https://$DOMAIN/health` (raw `host:8000` fallback pre-DNS) for up to 2 minutes and fails the run on non-200 — a deploy that doesn't serve traffic is a failed deploy, visibly.
+- **Frontend production image** (Next standalone, non-root, ~small) added even though Vercel stays the primary frontend host: it makes the stack fully self-hostable behind Caddy (Cloudflare-Tunnel fallback needs it).
+- **Backups with a tested restore**: nightly `pg_dump -Fc` + per-collection Qdrant snapshot API, gzip + datestamp, local retention pruning, offsite via a pluggable `BACKUP_TARGET` — private GitHub release (default, zero-cost) or any S3-compatible endpoint (covers Oracle Object Storage later). `restore.sh` ships alongside because an untested backup isn't one.
+- **CloudFormation stays a portfolio artifact**: single-instance template (VPC, public subnet, SG 22/80/443, arm64 Ubuntu via SSM public AMI parameter, Docker UserData). cfn-lint + shellcheck run in a new CI `infra` job, since no AWS credentials exist locally; the one live end-to-end AWS run (with screenshots and timing) is deferred to the AWS-trial session.
+- **Uptime Kuma** in the prod overlay at `status.$ARGUS_DOMAIN`; monitors are configured in its UI post-deploy.
+- `.gitattributes` forces LF + executable bit on all shell scripts so a Windows checkout can't ship CRLF scripts to a Linux host.
+
+### Remaining manual steps once a host is available
+1. Create the VM (Oracle A1.Flex when unblocked, or any Ubuntu host). Open 22/80/443 in the provider firewall (Oracle: VCN security list, ufw alone is not enough).
+2. Copy `infra/host-setup.sh` to the VM and run it; log out/in for the docker group.
+3. Copy `infra/.env.prod.example` to `~/argus/.env` on the VM and fill in real values.
+4. `docker login ghcr.io` on the VM with a read-only PAT (or make the GHCR packages public).
+5. Point DNS (DuckDNS subdomain) at the VM's public IP.
+6. Add GitHub secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_DOMAIN`.
+7. Run the **Deploy** workflow once by hand (workflow_dispatch) and confirm the health gate passes green.
+8. Add the backup cron line (in `infra/backup/backup.sh` header) and run one backup + one restore drill.
+9. Configure Uptime Kuma monitors at `status.$DOMAIN` (API `/health`, frontend, Vercel URL).
