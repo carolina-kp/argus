@@ -80,7 +80,7 @@ export default async function AnomaliesPage({
         </h1>
         <p className="mt-3 font-mono text-sm leading-relaxed text-parchment-dim">
           Z-score flags on returns, volume and TVL deltas, plus sustained
-          stablecoin depegs. Describes what happened — it does not recommend.
+          stablecoin depegs. It describes what happened; it does not recommend.
         </p>
       </header>
 

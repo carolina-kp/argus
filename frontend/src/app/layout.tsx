@@ -20,7 +20,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Argus — Digital Asset Intelligence Terminal",
+  title: "Argus · Digital Asset Intelligence Terminal",
   description:
     "A digital asset intelligence terminal: live market data, DeFi fundamentals, BTC on-chain metrics, and cited regulatory research over MiCA and FINMA guidance.",
 };
@@ -39,8 +39,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${spectral.variable} ${plexMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="relative flex min-h-full flex-col">
+      <body
+        className="relative flex min-h-full flex-col"
+        suppressHydrationWarning
+      >
         {/*
           Signature element — the jurisdiction rail. A persistent left margin,
           EU-blue fading to CH-amber, echoing the ruled margin of a legal text.
@@ -84,7 +88,7 @@ export default function RootLayout({
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-5 font-mono text-[0.7rem] leading-relaxed text-parchment-faint sm:flex-row sm:items-center sm:justify-between sm:px-8">
             <p>
               Educational project. Not financial or legal advice. Read-only
-              intelligence — no custody, no trading, no execution.
+              intelligence: no custody, no trading, no execution.
             </p>
             <p className="text-parchment-faint/70">
               Argus · MiCA + FINMA · sources cited to origin

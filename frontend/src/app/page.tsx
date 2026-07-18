@@ -1,67 +1,80 @@
 import Link from "next/link";
 
-const ENTRIES = [
+const SECTIONS = [
   {
     href: "/dashboard",
-    tag: "01",
+    index: "I",
     title: "Dashboard",
-    body: "Watchlist with sparklines, DeFi TVL, BTC on-chain metrics, unlock calendar, anomaly badges.",
+    body: "Watchlist with sparklines, DeFi TVL, BTC on-chain metrics, the unlock calendar, anomaly flags.",
   },
   {
     href: "/research",
-    tag: "02",
+    index: "II",
     title: "Regulatory Research",
-    body: "Ask MiCA and FINMA questions. Every answer traces to a cited article or section — or says it can't.",
+    body: "Ask MiCA and FINMA. Every answer traces to a cited article or section, or says it cannot.",
   },
   {
     href: "/briefs",
-    tag: "03",
+    index: "III",
     title: "Briefs Archive",
-    body: "The daily crypto brief: movers, TVL shifts, unlocks, one regulatory development.",
+    body: "The daily dispatch: movers, TVL shifts, unlocks, one regulatory development.",
   },
   {
     href: "/anomalies",
-    tag: "04",
+    index: "IV",
     title: "Anomalies Feed",
-    body: "Z-score flags on returns, volume, and TVL deltas, plus sustained stablecoin depegs.",
+    body: "Z-score flags on returns, volume and TVL deltas; sustained stablecoin depegs.",
   },
 ];
 
 export default function Home() {
   return (
-    <div className="py-6 sm:py-12">
-      <p className="font-mono text-[0.7rem] uppercase tracking-[0.3em] text-seal">
-        Swiss / EU digital asset intelligence
-      </p>
-      <h1 className="mt-5 max-w-3xl font-serif text-4xl font-light leading-[1.1] tracking-tight text-parchment sm:text-6xl">
-        Read-only market &amp; regulatory intelligence,{" "}
-        <span className="italic text-parchment-dim">cited to origin.</span>
-      </h1>
-      <p className="mt-6 max-w-xl font-mono text-sm leading-relaxed text-parchment-dim">
-        Live crypto markets, DeFi fundamentals, and BTC on-chain data alongside a
-        research assistant over MiCA and FINMA guidance. It explains what the
-        regulation says — it never advises.
-      </p>
+    <div className="py-4 sm:py-10">
+      <section className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+        <div>
+          <p className="font-mono text-[0.7rem] uppercase tracking-[0.34em] text-seal">
+            Swiss / EU digital asset intelligence
+          </p>
+          <h1 className="mt-6 font-serif text-5xl font-light leading-[1.02] tracking-[-0.01em] text-parchment sm:text-7xl">
+            Read to origin,
+            <br />
+            <span className="italic text-parchment-dim">never advised.</span>
+          </h1>
+        </div>
+        <p className="max-w-sm font-mono text-sm leading-relaxed text-parchment-dim lg:pb-3">
+          Live crypto markets, DeFi fundamentals and BTC on-chain data beside a
+          research assistant over MiCA and FINMA guidance. It explains what the
+          regulation says. It does not tell you what to do.
+        </p>
+      </section>
 
-      <div className="mt-12 grid gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-2">
-        {ENTRIES.map((entry) => (
+      <nav aria-label="Sections" className="mt-16 border-t border-line-strong">
+        {SECTIONS.map((s) => (
           <Link
-            key={entry.href}
-            href={entry.href}
-            className="group flex flex-col gap-3 bg-slate p-6 transition-colors duration-200 hover:bg-slate-2 sm:p-7"
+            key={s.href}
+            href={s.href}
+            className="group grid grid-cols-[2.5rem_1fr_auto] items-baseline gap-4 border-b border-line py-6 sm:grid-cols-[4rem_1fr_auto] sm:gap-8 sm:py-8"
           >
-            <div className="flex items-baseline gap-3 font-mono text-xs">
-              <span className="text-parchment-faint">{entry.tag}</span>
-              <span className="uppercase tracking-widest text-glacier transition-colors group-hover:text-seal">
-                {entry.title}
-              </span>
+            <span className="font-serif text-lg text-parchment-faint transition-colors duration-300 group-hover:text-seal sm:text-2xl">
+              {s.index}
+            </span>
+            <div>
+              <h2 className="font-serif text-2xl text-parchment transition-colors duration-300 group-hover:text-parchment sm:text-4xl">
+                {s.title}
+              </h2>
+              <p className="mt-2 max-w-xl font-mono text-xs leading-relaxed text-parchment-dim sm:text-sm">
+                {s.body}
+              </p>
             </div>
-            <p className="font-mono text-sm leading-relaxed text-parchment-dim">
-              {entry.body}
-            </p>
+            <span
+              aria-hidden
+              className="justify-self-end font-mono text-sm text-parchment-faint transition-all duration-300 group-hover:translate-x-1 group-hover:text-seal"
+            >
+              →
+            </span>
           </Link>
         ))}
-      </div>
+      </nav>
     </div>
   );
 }
