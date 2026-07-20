@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Citation, Jurisdiction, ResearchAnswer } from "@/lib/types";
 import { CitationSeal } from "@/components/research/citation-seal";
+import { AnswerMarkdown } from "@/components/research/answer-markdown";
 
 type Status = "idle" | "loading" | "done" | "error";
 
@@ -89,8 +90,8 @@ function AnswerBody({ answer }: { answer: ResearchAnswer }) {
 
   return (
     <div className="space-y-6">
-      <div className="whitespace-pre-wrap font-serif text-lg leading-relaxed text-parchment">
-        {revealed}
+      <div>
+        <AnswerMarkdown text={revealed} citations={answer.citations} />
         {!complete ? <span className="caret" aria-hidden /> : null}
       </div>
       {answer.citations.length > 0 ? (
