@@ -8,9 +8,9 @@ Educational project, not financial or legal advice.
 > **Live demo:** _deploying to Oracle Cloud Always Free (ARM); URL to follow._
 > Runs fully locally today with `docker compose up` (see [Setup](#setup)).
 
-Built by [Carolina Kogan Plachkinova](https://github.com/carolina-kp) as a portfolio-grade
-project targeting Swiss and Danish digital-asset employers. Two goals drive every decision:
-**genuinely useful daily**, and **demonstrably production-grade** at zero infra cost.
+Built by Carolina Kogan Plachkinova as a portfolio-grade project. Two goals drive every
+decision: genuinely useful daily, and demonstrably production-grade at zero ongoing
+infrastructure cost.
 
 ---
 
