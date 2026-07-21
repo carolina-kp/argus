@@ -55,25 +55,29 @@ body {
   background-color: var(--ink);
   color: var(--parchment);
   font-family: var(--font-mono);
-  /* Faint ledger grid: the register the whole terminal is ruled on. */
+  /*
+    Whisper of a ledger grid: the register the terminal is ruled on, but barely
+    perceptible so it reads as paper texture rather than a templated dark-mode
+    grid. Lines are heavily diluted toward the background and the cell is large.
+  */
   background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 56px 56px;
+    linear-gradient(color-mix(in srgb, var(--line) 32%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 32%, transparent) 1px, transparent 1px);
+  background-size: 88px 88px;
   background-position: -1px -1px;
   background-attachment: fixed;
 }
 
-/* The grid should read as texture, not a table — fade it under content. */
+/* The grid should read as texture, not a table — sink it further under content. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   background: radial-gradient(
-    120% 90% at 50% 0%,
-    color-mix(in srgb, var(--ink) 55%, transparent) 0%,
-    var(--ink) 72%
+    130% 100% at 50% 0%,
+    color-mix(in srgb, var(--ink) 30%, transparent) 0%,
+    var(--ink) 60%
   );
   pointer-events: none;
 }
